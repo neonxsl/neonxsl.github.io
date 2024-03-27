@@ -1,0 +1,378 @@
+.mediaViewInfo {
+	--web-view-name: NeonXSL;
+	--web-view-id: NeonXSL;
+	--web-scale-to-fit: true;
+	--web-scale-to-fit-type: width;
+	--web-scale-on-resize: true;
+	--web-enable-deep-linking: true;
+}
+:root {
+	--web-view-ids: NeonXSL;
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	border: none;
+}
+#NeonXSL {
+	position: absolute;
+	width: 2560px;
+	height: 5585px;
+	background-color: rgba(255,255,255,1);
+	overflow: hidden;
+	--web-view-name: NeonXSL;
+	--web-view-id: NeonXSL;
+	--web-scale-to-fit: true;
+	--web-scale-to-fit-type: width;
+	--web-scale-on-resize: true;
+	--web-enable-deep-linking: true;
+}
+#Rectangle_1 {
+	fill: rgba(100,0,0,1);
+	stroke: rgba(112,112,112,1);
+	stroke-width: 1px;
+	stroke-linejoin: miter;
+	stroke-linecap: butt;
+	stroke-miterlimit: 4;
+	shape-rendering: auto;
+}
+.Rectangle_1 {
+	position: absolute;
+	overflow: visible;
+	width: 2760px;
+	height: 3835px;
+	left: -107px;
+	top: -189px;
+}
+#Rectangle_3_i {
+	fill: url(#Rectangle_3_i);
+}
+.Rectangle_3_i {
+	position: absolute;
+	overflow: visible;
+	width: 2898px;
+	height: 2702px;
+	left: -245px;
+	top: -914px;
+}
+#NeonXSL_j {
+	opacity: 0.151;
+	left: -1455px;
+	top: -302px;
+	position: absolute;
+	overflow: visible;
+	width: 3982px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 844px;
+	color: rgba(255,255,255,1);
+}
+#NeonXSL_k {
+	opacity: 0.151;
+	left: -52px;
+	top: 368px;
+	position: absolute;
+	overflow: visible;
+	width: 3982px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 844px;
+	color: rgba(255,255,255,1);
+}
+#NeonXSL_l {
+	filter: drop-shadow(0px 0px 99px rgba(255, 255, 255, 0.624));
+	left: 235px;
+	top: 368px;
+	position: absolute;
+	overflow: visible;
+	width: 2091px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 443px;
+	color: rgba(255,255,255,1);
+}
+#Sydney_Australia {
+	opacity: 0.151;
+	left: 34px;
+	top: 1186px;
+	position: absolute;
+	overflow: visible;
+	width: 2493px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 275px;
+	color: rgba(255,255,255,1);
+}
+#Rectangle_2 {
+	fill: rgba(19,0,51,1);
+}
+.Rectangle_2 {
+	position: absolute;
+	overflow: visible;
+	width: 3737px;
+	height: 3974px;
+	left: -487px;
+	top: 1611px;
+}
+#Rectangle_4_p {
+	fill: url(#Rectangle_4_p);
+}
+.Rectangle_4_p {
+	width: 2898px;
+	height: 5421px;
+	position: absolute;
+	overflow: visible;
+	transform: matrix(1,0,0,1,-169,164) rotate(180deg);
+	transform-origin: center;
+}
+#HTML_CSS_JAVASRIPT {
+	opacity: 0.062;
+	left: 34px;
+	top: 1609px;
+	position: absolute;
+	overflow: visible;
+	width: 5769px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 477px;
+	color: rgba(255,255,255,1);
+}
+#HTML_CSS_JAVASRIPT_r {
+	opacity: 0.062;
+	left: -1604px;
+	top: 2032px;
+	position: absolute;
+	overflow: visible;
+	width: 5769px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 477px;
+	color: rgba(255,255,255,1);
+}
+#HTML_CSS_JAVASRIPT_s {
+	opacity: 0.062;
+	left: -2991px;
+	top: 2474px;
+	position: absolute;
+	overflow: visible;
+	width: 5769px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 477px;
+	color: rgba(255,255,255,1);
+}
+#HTML_CSS_JAVASRIPT_t {
+	opacity: 0.062;
+	left: -559px;
+	top: 2897px;
+	position: absolute;
+	overflow: visible;
+	width: 5769px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 477px;
+	color: rgba(255,255,255,1);
+}
+#HTML_CSS_JAVASRIPT_u {
+	opacity: 0.062;
+	left: -2304px;
+	top: 3350px;
+	position: absolute;
+	overflow: visible;
+	width: 5769px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 477px;
+	color: rgba(255,255,255,1);
+}
+#hi_im_a_dev_from_sydney_austra {
+	filter: drop-shadow(0px 0px 99px rgba(255, 255, 255, 0.463));
+	left: 243px;
+	top: 1729px;
+	position: absolute;
+	overflow: visible;
+	width: 2076px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 234px;
+	color: rgba(255,255,255,1);
+	line-height: 210px; /* Adjust line spacing here */
+}
+#Ellipse_2_x {
+	fill: url(#Ellipse_2_x);
+}
+.Ellipse_2_x {
+	position: absolute;
+	overflow: visible;
+	width: 1100px;
+	height: 1100px;
+	left: -119px;
+	top: 3048px;
+}
+#Ellipse_3_z {
+	fill: url(#Ellipse_3_z);
+}
+.Ellipse_3_z {
+	position: absolute;
+	overflow: visible;
+	width: 1100px;
+	height: 1100px;
+	left: -119px;
+	top: 2577px;
+}
+#creator_of_Neonium {
+    filter: drop-shadow(0px 0px 99px rgba(255, 255, 255, 0.675));
+    left: 667px;
+    top: 2934px;
+    position: absolute;
+    overflow: visible;
+    width: 871px;
+    white-space: nowrap;
+    text-align: left;
+    font-family: Avenir Next;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 171px;
+    color: rgba(255, 255, 255, 1);
+    line-height: 200px; /* Adjust line spacing here */
+}
+
+#developer_at__Project_Lumina {
+    filter: drop-shadow(0px 3px 99px rgba(255, 255, 255, 0.557));
+    left: 667px;
+    top: 3454px;
+    position: absolute;
+    overflow: visible;
+    width: 1375px;
+    white-space: nowrap;
+    text-align: left;
+    font-family: Avenir Next;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 171px;
+    color: rgba(255, 255, 255, 1);
+    line-height: 200px; /* Adjust line spacing here */
+
+}
+#what_i_do {
+	filter: drop-shadow(0px 0px 99px rgba(255, 255, 255, 0.467));
+	left: 270px;
+	top: 2358px;
+	position: absolute;
+	overflow: visible;
+	width: 2022px;
+	white-space: nowrap;
+	text-align: left;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 387px;
+	color: rgba(255,255,255,1);
+}
+#Ellipse_4_ {
+	fill: url(#Ellipse_4_);
+}
+.Ellipse_4_ {
+	position: absolute;
+	overflow: visible;
+	width: 3622px;
+	height: 3484px;
+	left: -531px;
+	top: 3459px;
+}
+#pmore_website_coming_soonp {
+	filter: drop-shadow(0px 0px 99px rgba(255, 255, 255, 0.435));
+	left: 272px;
+	top: 4171px;
+	position: absolute;
+	overflow: visible;
+	width: 2017px;
+	white-space: nowrap;
+	text-align: center;
+	font-family: Avenir Next;
+	font-style: normal;
+	font-weight: 800;
+	font-size: 211px;
+	color: rgba(255,255,255,1);
+	line-height: 200px; /* Adjust line spacing here */
+}
+#Image_1 {
+	position: absolute;
+	width: 375px;
+	height: 375px;
+	left: 243px;
+	top: 3459px;
+	overflow: visible;
+}
+#Group_1 {
+	position: absolute;
+	width: 375px;
+	height: 380px;
+	left: 243px;
+	top: 2934px;
+	overflow: visible;
+}
+#Ellipse_1 {
+	fill: rgba(57,33,87,1);
+	stroke: rgba(195,126,255,1);
+	stroke-width: 2px;
+	stroke-linejoin: round;
+	stroke-linecap: butt;
+	stroke-miterlimit: 4;
+	shape-rendering: auto;
+}
+.Ellipse_1 {
+	position: absolute;
+	overflow: visible;
+	width: 375px;
+	height: 380px;
+	left: 0px;
+	top: 0px;
+}
+#NeoNium {
+	position: absolute;
+	width: 231px;
+	height: 231px;
+	left: 72px;
+	top: 75px;
+	overflow: visible;
+}
+#IMG_7687 {
+	position: absolute;
+	width: 706px;
+	height: 705px;
+	left: 927px;
+	top: 4768px;
+	overflow: visible;
+}
