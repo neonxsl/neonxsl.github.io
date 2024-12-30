@@ -8,18 +8,20 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.1/mapbox-gl.js"></script>
     <style>
         body { margin: 0; padding: 0; }
+
+        /* Container for the map */
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        
+
         /* Styling for the marker */
         .marker {
-            background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
+            background-image: url('http://cd.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
             background-size: cover;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
         }
-        
+
         /* Styling for the "Enable Compass" button */
         #startBtn {
             position: absolute;
@@ -44,11 +46,28 @@
         #startBtn:active {
             background-color: #004085;
         }
+
+        /* Styling for the centered image */
+        .image-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <button id="startBtn">Enable Compass</button>
+
+    <!-- Image container in the center -->
+    <div class="image-container"></div>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
