@@ -19,46 +19,28 @@
             border-radius: 50%;
             cursor: pointer;
         }
-
-        #startButton {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        #startButton:disabled {
-            background-color: #ccc;
-        }
     </style>
 </head>
 <body>
     <div id="map"></div>
-    <button id="startButton">Enable Compass</button>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
 
         let userLocation = [30, 15]; // Default location (will be replaced once geolocation is available)
+        let userHeading = 0; // Default heading (in degrees)
         let userMarker = null;
-        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        let currentBearing = 0;
-        let map;
-
+        
         // Function to initialize the map
         function initializeMap(center) {
-            map = new mapboxgl.Map({
+            const map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/sabarishs/cm5apzgaz00ql01spg1dkd9fo',
                 projection: 'globe',  // This makes the map appear as a 3D globe
                 zoom: 10,              // Set zoom to a global view initially
                 center: center,       // Set the initial map center
                 pitch: 60,            // Tilt the map for 3D effect
-                bearing: currentBearing,  // Set initial rotation of the globe
+                bearing: 0            // Set initial rotation of the globe
             });
 
             map.scrollZoom.disable();
@@ -75,11 +57,12 @@
             return map;
         }
 
-        // Function to update user's location
-        function updateLocation() {
+        // Function to update user's location and heading
+        function updateLocation(map) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     userLocation = [position.coords.longitude, position.coords.latitude];
+                    userHeading = position.coords.heading || 0; // Use the heading if available, otherwise 0
 
                     // Create or update the marker
                     if (!userMarker) {
@@ -94,11 +77,11 @@
                         userMarker.setLngLat(userLocation);
                     }
 
-                    // Smooth transition to new location
-                    map.flyTo({
+                    // Update map bearing to match the user's heading
+                    map.easeTo({
                         center: userLocation,
-                        bearing: currentBearing,
-                        zoom: 17.9,
+                        bearing: userHeading,  // Set the bearing based on user's heading
+                        zoom: 15,
                         speed: 1,  // Controls the speed of the transition
                         curve: 1.5,    // Smoother transition curve
                         easing: function (t) { return t; }
@@ -112,51 +95,16 @@
             }
         }
 
-        // Function to update bearing based on device orientation
-        function updateBearing(e) {
-            let degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-            if (degree !== undefined) {
-                currentBearing = degree;
-
-                // Log the bearing and orientation data to the console
-                console.log("Current Bearing: " + currentBearing);
-                console.log("Device Orientation - Alpha: " + e.alpha + " | Beta: " + e.beta + " | Gamma: " + e.gamma);
-
-          
-            }
-        }
-
-        // Function to start the compass on iOS
-        function startCompass() {
-            if (isIOS) {
-                DeviceOrientationEvent.requestPermission()
-                    .then((response) => {
-                        if (response === "granted") {
-                            window.addEventListener("deviceorientation", updateBearing, true);
-                        } else {
-                            alert("Permission must be granted!");
-                        }
-                    })
-                    .catch(() => alert("Device Orientation not supported"));
-            } else {
-                window.addEventListener("deviceorientationabsolute", updateBearing, true);
-            }
-        }
-
-        // Initialize the map after getting the user's location
+        // First, get the user's location and initialize the map
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 userLocation = [position.coords.longitude, position.coords.latitude];
                 
                 // Initialize the map with the user's location as the center
-                initializeMap(userLocation);
+                const map = initializeMap(userLocation);
 
                 // Update location every 5 seconds for continuous movement
-                setInterval(updateLocation, 100);
-                
-                // Enable compass on button click (for iOS)
-                document.getElementById("startButton").addEventListener("click", startCompass);
-
+                setInterval(() => updateLocation(map), 100);
             }, function(error) {
                 alert("Error retrieving location: " + error.message);
             });
