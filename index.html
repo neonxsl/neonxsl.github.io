@@ -28,9 +28,10 @@
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
 
         let userLocation = [30, 15]; // Default location (will be replaced once geolocation is available)
-        let userHeading = 0; // Default heading (in degrees)
         let userMarker = null;
-        
+        let deviceBearing = 0; // Store the device's heading
+        let lastBearing = 0;  // Store the last bearing to create smooth transition
+
         // Function to initialize the map
         function initializeMap(center) {
             const map = new mapboxgl.Map({
@@ -57,12 +58,11 @@
             return map;
         }
 
-        // Function to update user's location and heading
+        // Function to update user's location
         function updateLocation(map) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     userLocation = [position.coords.longitude, position.coords.latitude];
-                    userHeading = position.coords.heading || 0; // Use the heading if available, otherwise 0
 
                     // Create or update the marker
                     if (!userMarker) {
@@ -77,10 +77,10 @@
                         userMarker.setLngLat(userLocation);
                     }
 
-                    // Update map bearing to match the user's heading
-                    map.easeTo({
+                    // Update the map's location and smooth transition of bearing
+                    map.flyTo({
                         center: userLocation,
-                        bearing: userHeading,  // Set the bearing based on user's heading
+                        bearing: deviceBearing,  // Use the device's heading as the bearing
                         zoom: 17.9,
                         speed: 1,  // Controls the speed of the transition
                         curve: 1.5,    // Smoother transition curve
@@ -95,6 +95,28 @@
             }
         }
 
+        // Smoothly transition the bearing
+        function updateBearing(map) {
+            const bearingDiff = deviceBearing - lastBearing;
+            const step = bearingDiff * 0.1; // Smooth transition factor (higher = slower transition)
+            lastBearing += step;
+
+            // Update the map bearing smoothly using rotateTo
+            map.rotateTo(lastBearing, {
+                duration: 200, // Adjust the duration for smoothness
+                easing: function (t) { return t; }
+            });
+        }
+
+        // Listen for the device orientation event to get the device's heading
+        window.addEventListener('deviceorientation', function(e) {
+            // Use webkitCompassHeading for better compatibility with some browsers (e.g., Safari)
+            deviceBearing = e.webkitCompassHeading || e.alpha; // Fallback to e.alpha for non-Safari browsers
+
+            console.log("Device bearing:", deviceBearing); // You can remove this log for production
+
+        }, false);
+
         // First, get the user's location and initialize the map
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -104,7 +126,10 @@
                 const map = initializeMap(userLocation);
 
                 // Update location every 5 seconds for continuous movement
-                setInterval(() => updateLocation(map), 100);
+                setInterval(() => {
+                    updateLocation(map);
+                    updateBearing(map); // Smoothly update the bearing based on device orientation
+                }, 100);
             }, function(error) {
                 alert("Error retrieving location: " + error.message);
             });
