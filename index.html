@@ -9,21 +9,7 @@
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-
-        /* Button to start compass (for iOS) */
-        #startBtn {
-            position: absolute;
-            top: 20px;  /* Adjust position */
-            left: 20px; /* Adjust position */
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            z-index: 10;  /* Ensures the button is in front of the map */
-            border-radius: 5px; /* Optional: rounded corners for the button */
-        }
-
+        
         /* Custom marker style */
         .marker {
             background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
@@ -33,33 +19,46 @@
             border-radius: 50%;
             cursor: pointer;
         }
+
+        #startButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #startButton:disabled {
+            background-color: #ccc;
+        }
     </style>
 </head>
 <body>
-    <button id="startBtn">Start Compass</button>
     <div id="map"></div>
+    <button id="startButton">Enable Compass</button>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
 
         let userLocation = [30, 15]; // Default location (will be replaced once geolocation is available)
         let userMarker = null;
-        let deviceBearing = 0; // Store the device's heading
-        let lastBearing = 0;  // Store the last bearing to create smooth transition
-        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent); // Detect iOS device
-
-        const startBtn = document.getElementById("startBtn");
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        let currentBearing = 0;
+        let map;
 
         // Function to initialize the map
         function initializeMap(center) {
-            const map = new mapboxgl.Map({
+            map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/sabarishs/cm5apzgaz00ql01spg1dkd9fo',
                 projection: 'globe',  // This makes the map appear as a 3D globe
                 zoom: 10,              // Set zoom to a global view initially
                 center: center,       // Set the initial map center
                 pitch: 60,            // Tilt the map for 3D effect
-                bearing: 0            // Set initial rotation of the globe
+                bearing: currentBearing,  // Set initial rotation of the globe
             });
 
             map.scrollZoom.disable();
@@ -77,7 +76,7 @@
         }
 
         // Function to update user's location
-        function updateLocation(map) {
+        function updateLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     userLocation = [position.coords.longitude, position.coords.latitude];
@@ -95,10 +94,9 @@
                         userMarker.setLngLat(userLocation);
                     }
 
-                    // Update the map's location and smooth transition of bearing
+                    // Smooth transition to new location
                     map.flyTo({
                         center: userLocation,
-                        bearing: deviceBearing,  // Use the device's heading as the bearing
                         zoom: 17.9,
                         speed: 1,  // Controls the speed of the transition
                         curve: 1.5,    // Smoother transition curve
@@ -113,65 +111,64 @@
             }
         }
 
-        // Smoothly transition the bearing
-        function updateBearing(map) {
-            const bearingDiff = deviceBearing - lastBearing;
-            const step = bearingDiff * 0.1; // Smooth transition factor (higher = slower transition)
-            lastBearing += step;
+        // Function to update bearing based on device orientation
+        function updateBearing(e) {
+            let degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+            if (degree !== undefined) {
+                currentBearing = degree;
 
-            // Update the map bearing smoothly using rotateTo
-            map.rotateTo(lastBearing, {
-                duration: 200, // Adjust the duration for smoothness
-                easing: function (t) { return t; }
-            });
+                // Log the bearing and orientation data to the console
+                console.log("Current Bearing: " + currentBearing);
+                console.log("Device Orientation - Alpha: " + e.alpha + " | Beta: " + e.beta + " | Gamma: " + e.gamma);
+
+                // Smoothly update the bearing with easing
+                map.easeTo({
+                    bearing: currentBearing,
+                    duration: 300, // Duration of the transition
+                    easing: function (t) {
+                        return t * (2 - t); // Easing function for smooth rotation
+                    }
+                });
+            }
         }
 
-        // Listen for the device orientation event to get the device's heading
+        // Function to start the compass on iOS
         function startCompass() {
             if (isIOS) {
                 DeviceOrientationEvent.requestPermission()
                     .then((response) => {
                         if (response === "granted") {
-                            window.addEventListener("deviceorientation", handler, true);
+                            window.addEventListener("deviceorientation", updateBearing, true);
                         } else {
-                            alert("Compass permission has to be allowed!");
+                            alert("Permission must be granted!");
                         }
                     })
                     .catch(() => alert("Device Orientation not supported"));
             } else {
-                window.addEventListener("deviceorientationabsolute", handler, true);
+                window.addEventListener("deviceorientationabsolute", updateBearing, true);
             }
         }
 
-        function handler(e) {
-            // For iOS and Android, use the appropriate property for the heading
-            deviceBearing = e.webkitCompassHeading || Math.abs(e.alpha - 360); // Normalize to compass heading
-            console.log("Device bearing:", deviceBearing); // You can remove this log for production
-        }
-
-        // First, get the user's location and initialize the map
+        // Initialize the map after getting the user's location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 userLocation = [position.coords.longitude, position.coords.latitude];
                 
                 // Initialize the map with the user's location as the center
-                const map = initializeMap(userLocation);
+                initializeMap(userLocation);
 
-                // Update location and bearing every 100ms for continuous movement
-                setInterval(() => {
-                    updateLocation(map);
-                    updateBearing(map); // Smoothly update the bearing based on device orientation
-                }, 100);
+                // Update location every 5 seconds for continuous movement
+                setInterval(updateLocation, 100);
+                
+                // Enable compass on button click (for iOS)
+                document.getElementById("startButton").addEventListener("click", startCompass);
+
             }, function(error) {
                 alert("Error retrieving location: " + error.message);
             });
         } else {
             alert("Geolocation is not supported by this browser.");
         }
-
-        // Start compass on button click
-        startBtn.addEventListener("click", startCompass);
-
     </script>
 </body>
 </html>
