@@ -9,8 +9,6 @@
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        
-        /* Custom marker style */
         .marker {
             background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
             background-size: cover;
@@ -23,68 +21,49 @@
 </head>
 <body>
     <div id="map"></div>
+    <button id="startBtn">Enable Compass</button>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
 
-        let userLocation = [30, 15]; // Default location (will be replaced once geolocation is available)
-        let userHeading = 0; // Default heading (in degrees)
         let userMarker = null;
-        
-        // Function to initialize the map
+        let map;
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
         function initializeMap(center) {
-            const map = new mapboxgl.Map({
+            map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/sabarishs/cm5apzgaz00ql01spg1dkd9fo',
-                projection: 'globe',  // This makes the map appear as a 3D globe
-                zoom: 10,              // Set zoom to a global view initially
-                center: center,       // Set the initial map center
-                pitch: 60,            // Tilt the map for 3D effect
-                bearing: 0            // Set initial rotation of the globe
+                projection: 'globe',
+                zoom: 17.9,
+                center: center,
+                pitch: 60,
             });
 
             map.scrollZoom.disable();
-
-            map.on('style.load', () => {
-                map.setFog({
-                    range: [0.5, 3],
-                    color: 'rgb(255, 255, 255)',
-                    highColor: 'rgb(255, 255, 255)',
-                    anchor: 'center'
-                });
-            });
-
             return map;
         }
 
-        // Function to update user's location and heading
-        function updateLocation(map) {
+        function updateLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     userLocation = [position.coords.longitude, position.coords.latitude];
-                    userHeading = position.coords.heading || 0; // Use the heading if available, otherwise 0
 
-                    // Create or update the marker
                     if (!userMarker) {
                         const el = document.createElement('div');
                         el.className = 'marker';
-
                         userMarker = new mapboxgl.Marker(el)
                             .setLngLat(userLocation)
-                            .addTo(map)
-                            .togglePopup();
+                            .addTo(map);
                     } else {
                         userMarker.setLngLat(userLocation);
                     }
 
-                    // Update map bearing to match the user's heading
-                    map.easeTo({
+                    map.flyTo({
                         center: userLocation,
-                        bearing: userHeading,  // Set the bearing based on user's heading
-                        zoom: 15,
-                        speed: 1,  // Controls the speed of the transition
-                        curve: 1.5,    // Smoother transition curve
-                        easing: function (t) { return t; }
+                        zoom: 17.9,
+                        speed: 1,
+                        curve: 1.5,
                     });
 
                 }, function(error) {
@@ -95,22 +74,82 @@
             }
         }
 
-        // First, get the user's location and initialize the map
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 userLocation = [position.coords.longitude, position.coords.latitude];
-                
-                // Initialize the map with the user's location as the center
-                const map = initializeMap(userLocation);
-
-                // Update location every 5 seconds for continuous movement
-                setInterval(() => updateLocation(map), 100);
+                initializeMap(userLocation);
+                setInterval(updateLocation, 100);
             }, function(error) {
                 alert("Error retrieving location: " + error.message);
             });
         } else {
             alert("Geolocation is not supported by this browser.");
         }
+
+        // Handle compass
+        const startBtn = document.getElementById("startBtn");
+
+        function startCompass() {
+            if (isIOS) {
+                DeviceOrientationEvent.requestPermission()
+                    .then((response) => {
+                        if (response === "granted") {
+                            window.addEventListener("deviceorientation", handler, true);
+                        } else {
+                            alert("Permission denied! You need to allow access to the device's orientation.");
+                        }
+                    })
+                    .catch(() => alert("Device orientation is not supported on this device."));
+            } else {
+                window.addEventListener("deviceorientationabsolute", handler, true);
+            }
+        }
+
+        function handler(e) {
+            const degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+            map.rotateTo(degree, {duration: 0});  // Smooth rotation of the map
+        }
+
+        startBtn.addEventListener("click", startCompass);
     </script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+      
+      /* Styling for the marker */
+      .marker {
+          background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
+          background-size: cover;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          cursor: pointer;
+      }
+      
+      /* Styling for the "Enable Compass" button */
+      #startBtn {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          padding: 10px 20px;
+          background-color: #007bff;
+          color: white;
+          font-size: 16px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          z-index: 10;  /* Ensures the button stays in front of the map */
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+          transition: background-color 0.3s ease;
+      }
+  
+      #startBtn:hover {
+          background-color: #0056b3;
+      }
+  
+      #startBtn:active {
+          background-color: #004085;
+      }
+  </style>
 </body>
 </html>
