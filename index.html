@@ -12,14 +12,14 @@
         
         /* Styling for the marker */
         .marker {
-            background-image: url('htts://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
+            background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
             background-size: cover;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
         }
-
+        
         /* Styling for the "Enable Compass" button */
         #startBtn {
             position: absolute;
@@ -32,7 +32,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            z-index: 10;
+            z-index: 10;  /* Ensures the button stays in front of the map */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: background-color 0.3s ease;
         }
@@ -44,27 +44,11 @@
         #startBtn:active {
             background-color: #004085;
         }
-
-        /* Center the image in the middle of the screen */
-        #centeredImage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            background-image: url('https://cdn.prod.website-files.com/62c5e0898dea0b799c5f2210/62e8212acc540f291431bad2_location-icon.png');
-            background-size: cover;
-            border-radius: 50%;
-        }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <button id="startBtn">Enable Compass</button>
-
-    <!-- The image to be placed in the center -->
-    <div id="centeredImage"></div>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FiYXJpc2hzIiwiYSI6ImNtMGo0dW50aDBxcWoya29neGptOXdyYmwifQ.e20zeNypFv8y7afl414PSA';
@@ -78,9 +62,9 @@
                 container: 'map',
                 style: 'style.json',
                 projection: 'globe',
-                zoom: 15,
+                zoom: 17.9,
                 center: center,
-                pitch: 70,
+                pitch: 60,
             });
 
             map.scrollZoom.disable();
@@ -90,7 +74,7 @@
         function updateLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    const userLocation = [position.coords.longitude, position.coords.latitude];
+                    userLocation = [position.coords.longitude, position.coords.latitude];
 
                     if (!userMarker) {
                         const el = document.createElement('div');
@@ -102,14 +86,13 @@
                         userMarker.setLngLat(userLocation);
                     }
 
-                    // Smoothly transition the map center to the new location
-                    map.easeTo({
+                    map.flyTo({
                         center: userLocation,
-                        zoom: 17.5,
-                        speed: 0.5,
+                        zoom: 17.9,
+                        speed: 1,
                         curve: 1.5,
-                        easing: t => t,
                     });
+
                 }, function(error) {
                     alert("Error retrieving location: " + error.message);
                 });
@@ -120,9 +103,9 @@
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                const userLocation = [position.coords.longitude, position.coords.latitude];
+                userLocation = [position.coords.longitude, position.coords.latitude];
                 initializeMap(userLocation);
-                setInterval(updateLocation, 100);  // Smooth updates every 100ms
+                setInterval(updateLocation, 100);
             }, function(error) {
                 alert("Error retrieving location: " + error.message);
             });
@@ -154,7 +137,7 @@
 
         function handler(e) {
             const degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-            map.rotateTo(degree, {duration: 500});  // Smooth rotation of the map with a 500ms duration
+            map.rotateTo(degree, {duration: 0});  // Smooth rotation of the map
         }
 
         startBtn.addEventListener("click", startCompass);
